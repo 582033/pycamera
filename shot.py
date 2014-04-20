@@ -46,5 +46,3 @@ def print_all_fonts():#{{{
 #}}}
 #print_all_fonts()
 sleep()
-
-
