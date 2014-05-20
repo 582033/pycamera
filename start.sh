@@ -1,21 +1,5 @@
+#!/bin/bash
 
-# XXX XXX XXX  THIS IS A NEW FILE XXX XXX XXX
-
-#!/bin/sh
-
-#
-# start.sh
-#
-# Developed by UNKNOWN AUTHOR <UNKNOWN@undefined.net>
-# Copyright (c) 2013 Platon Group, http://platon.sk/
-# Licensed under terms of GNU General Public License.
-# All rights reserved.
-#
-# Changelog:
-# 2013-12-22 - created
-#
-
-# $Platon$
 process_name='shot.py'
 path='/root/pycamera/'
 ####
