@@ -1,48 +1,60 @@
-#!/user/bin/python
-#-*-coding:utf8-*- 
-import os, sys, time
+#!/usr/bin/env python
+#-*-coding:utf8-*-
+import os, sys, time, math
 import pygame, pygame.camera, pygame.font
 from pygame.locals import *
 
-resolution = (640, 480)
-devicePath = "/dev/video0"
-IMG = './shot.jpg'
 
-pygame.init()
-def create_date_img(): #{{{
-    now = time.strftime('%Y-%m-%d %X',time.localtime(time.time()))
-    pygame.font.init()
-    font = pygame.font.SysFont("wenquanyizenhei", 20)
-    image = font.render(now, True, (255, 255, 255))
-    #pygame.image.save(image, IMG)
-    return image
-#}}}
-def scp(source_path, obj_path): #{{{
-    os.system('scp %s www-data@42.96.185.104:~/cake/other/ > /dev/null' % (IMG))
-    print ''
-#}}}
-def output(): #{{{
-    pygame.camera.init()
-    image = create_date_img()
-    cam = pygame.camera.Camera(devicePath, (resolution[0],resolution[1]))
-    cam.start()
-    cam_image = cam.get_image()
-    cam_image.blit(image, (440, 450))
-    pygame.image.save(cam_image, IMG)
-    cam.stop()
-    scp(IMG, '/var/www/cake/other/')
-#}}}
-def sleep(): #{{{
+class pycamera():
+    def __init__(self, savepath, savename):
+        #摄像头支持的最大分辨率
+        self.picture_resolution = (1280, 720)
+        self.devicePath = "/dev/video0"
+
+        self.savepath = savepath
+        self.savename = './%s.jpg' % (savename)
+
+        pygame.init()
+        pygame.camera.init()
+        pygame.font.init()
+
+    #创建带时间的图片背景
+    def _create_date_img(self):
+        now = time.strftime('%Y-%m-%d %X',time.localtime(time.time()))
+        font = pygame.font.SysFont("wenquanyimicrohei", 28)
+        image = font.render(now, True, (255, 255, 255))
+        #pygame.image.save(image, IMG)
+        return image
+
+    #对生成的图片进行位置移动
+    def _scp(self):
+        #os.system('scp %s root@yjinag.cn:/var/www/cake/other/ > /dev/null' % (IMG))
+        os.system('cp %s %s > /dev/null' % (self.savename, self.savepath))
+
+    #监测本地pygame可以调用的字体
+    def show_fonts_list():
+        print pygame.font.get_fonts()
+
+    def output(self):
+        image = self._create_date_img()
+        cam = pygame.camera.Camera(self.devicePath, (self.picture_resolution[0], self.picture_resolution[1]))
+        cam.start()
+        cam_image = cam.get_image()
+        #时间坐标
+        date_x = math.floor(self.picture_resolution[0] * 0.75)
+        date_y = math.floor(self.picture_resolution[1] * 0.9)
+        cam_image.blit(image, (date_x, date_y))
+        pygame.image.save(cam_image, self.savename)
+        cam.stop()
+        self._scp()
+
+if __name__=="__main__":
+    #pycamera(图片存放地址, 图片名称)
+    pycamera = pycamera('/opt/www/', 'shot')
+    #pycamera.show_fonts_list()
     counter = 0
     while True:
-        output()
+        pycamera.output()
         counter += 1
         print counter
-        time.sleep(1)
-#}}}
-def print_all_fonts():#{{{
-    pygame.font.init()
-    print pygame.font.get_fonts()
-#}}}
-#print_all_fonts()
-sleep()
+        time.sleep(0.1)
